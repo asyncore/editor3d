@@ -1,10 +1,10 @@
-import { Tool } from "./types";
+import { Tool } from './types';
 import { Selection } from '../Selection';
 import { ThreeScene } from '../three/Scene';
 
 export interface SelectToolContext {
-  selection: Selection
-  scene: ThreeScene
+  selection: Selection;
+  scene: ThreeScene;
 }
 
 export class SelectTool implements Tool {

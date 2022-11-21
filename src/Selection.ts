@@ -1,5 +1,5 @@
-import { ThreeRaycaster } from "./three/Raycaster";
-import { GeomType } from "./three/Scene";
+import { ThreeRaycaster } from './three/Raycaster';
+import { GeomType } from './three/Scene';
 
 interface SelectionContext {
   raycaster: ThreeRaycaster;
@@ -15,11 +15,11 @@ export class Selection {
   }
 
   isSelectable = (type: GeomType | undefined): boolean => {
-    return type === "box" || type === "sphere";
+    return type === 'box' || type === 'sphere';
   };
 
   isPickable = (type: GeomType | undefined): boolean => {
-    return type === "box" || type === "sphere" || type === "ground";
+    return type === 'box' || type === 'sphere' || type === 'ground';
   };
 
   count = (): number => this.selectionSet.size;

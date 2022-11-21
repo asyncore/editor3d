@@ -1,39 +1,39 @@
-import * as THREE from "three";
-import { Object3D } from "three";
-import { Selection } from "../Selection";
+import * as THREE from 'three';
+import { Object3D } from 'three';
+import { Selection } from '../Selection';
 
 export interface SceneContext {
   backgroundColor?: string;
 }
 
-export type GeomType = "ground" | "box" | "sphere" | "selection";
+export type GeomType = 'ground' | 'box' | 'sphere' | 'selection';
 
 export function getGeomType(object: THREE.Object3D): GeomType | undefined {
-  return object.userData["GeomType"];
+  return object.userData['GeomType'];
 }
 
 export function setGeomType(object: THREE.Object3D, type: GeomType): void {
-  object.userData["GeomType"] = type;
+  object.userData['GeomType'] = type;
 }
 
 export function getRadius(object: THREE.Object3D): number | undefined {
-  return object.userData["radius"];
+  return object.userData['radius'];
 }
 
 export function setRadius(object: THREE.Object3D, radius: number): void {
-  object.userData["radius"] = radius;
+  object.userData['radius'] = radius;
 }
 
 export function getSize(object: THREE.Object3D): number | undefined {
-  return object.userData["size"];
+  return object.userData['size'];
 }
 
 export function setSize(object: THREE.Object3D, size: number): void {
-  object.userData["size"] = size;
+  object.userData['size'] = size;
 }
 
 export function isMesh(object: Object3D): object is THREE.Mesh {
-  return object.type === "Mesh";
+  return object.type === 'Mesh';
 }
 
 export class ThreeScene {
@@ -43,7 +43,7 @@ export class ThreeScene {
   private readonly transientIdMap: Map<number, number>;
 
   constructor(context: SceneContext) {
-    const color = context.backgroundColor ?? "skyBlue";
+    const color = context.backgroundColor ?? 'skyBlue';
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(color);
 
@@ -54,9 +54,9 @@ export class ThreeScene {
   }
 
   setupGround = (): void => {
-    const planeColor = "tan";
-    const centerLineColor = "orangered";
-    const gridColor = "sandybrown";
+    const planeColor = 'tan';
+    const centerLineColor = 'orangered';
+    const gridColor = 'sandybrown';
 
     const planeDim = 100;
     const planeGeo = new THREE.PlaneGeometry(planeDim, planeDim);
@@ -66,12 +66,12 @@ export class ThreeScene {
     });
     const plane = new THREE.Mesh(planeGeo, planeMat);
     plane.rotation.x = Math.PI * -0.5;
-    setGeomType(plane, "ground");
+    setGeomType(plane, 'ground');
     this.scene.add(plane);
 
     const division = 20;
     const grid = new THREE.GridHelper(planeDim, division, centerLineColor, gridColor);
-    setGeomType(grid, "ground");
+    setGeomType(grid, 'ground');
     this.scene.add(grid);
   };
 
@@ -91,7 +91,7 @@ export class ThreeScene {
     const boxMat = new THREE.MeshPhongMaterial({ color });
     const box = new THREE.Mesh(boxGeo, boxMat);
     box.position.set(x, y, z);
-    setGeomType(box, "box");
+    setGeomType(box, 'box');
     setSize(box, size);
     this.scene.add(box);
     return box.id;
@@ -103,12 +103,12 @@ export class ThreeScene {
       const boxGeo = mesh.geometry;
       const boxWrf = new THREE.WireframeGeometry(boxGeo);
       const boxSeg = new THREE.LineSegments(boxWrf);
-      boxSeg.material = new THREE.LineBasicMaterial({ color: "lime" });
+      boxSeg.material = new THREE.LineBasicMaterial({ color: 'lime' });
       boxSeg.material.opacity = 0.75;
       boxSeg.material.transparent = true;
       const { x, y, z } = mesh.position;
       boxSeg.position.set(x, y, z);
-      setGeomType(boxSeg, "selection");
+      setGeomType(boxSeg, 'selection');
       this.scene.add(boxSeg);
       return boxSeg.id;
     }
@@ -122,7 +122,7 @@ export class ThreeScene {
     const sphereMat = new THREE.MeshPhongMaterial({ color });
     const sphere = new THREE.Mesh(sphereGeo, sphereMat);
     sphere.position.set(x, y, z);
-    setGeomType(sphere, "sphere");
+    setGeomType(sphere, 'sphere');
     setRadius(sphere, radius);
     this.scene.add(sphere);
     return sphere.id;
@@ -134,12 +134,12 @@ export class ThreeScene {
       const sphereGeo = mesh.geometry;
       const sphereWrf = new THREE.WireframeGeometry(sphereGeo);
       const sphereSeg = new THREE.LineSegments(sphereWrf);
-      sphereSeg.material = new THREE.LineBasicMaterial({ color: "lime" });
+      sphereSeg.material = new THREE.LineBasicMaterial({ color: 'lime' });
       sphereSeg.material.opacity = 0.75;
       sphereSeg.material.transparent = true;
       const { x, y, z } = mesh.position;
       sphereSeg.position.set(x, y, z);
-      setGeomType(sphereSeg, "selection");
+      setGeomType(sphereSeg, 'selection');
       this.scene.add(sphereSeg);
       return sphereSeg.id;
     }
@@ -176,9 +176,9 @@ export class ThreeScene {
           if (object) {
             const type = getGeomType(object);
             let transientId: number | null = null;
-            if (type === "sphere") {
+            if (type === 'sphere') {
               transientId = this.highlightSphere(objectId);
-            } else if (type === "box") {
+            } else if (type === 'box') {
               transientId = this.highlightBox(objectId);
             }
             if (transientId) {

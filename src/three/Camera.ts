@@ -1,5 +1,5 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export interface CameraContext {
   canvas: HTMLCanvasElement;
@@ -28,11 +28,11 @@ export class ThreeCamera {
   }
 
   addChangeListener = (callback: (event: any) => void): void => {
-    this.controls.addEventListener("change", callback);
+    this.controls.addEventListener('change', callback);
   };
 
   removeChangetListener = (callback: (event: any) => void): void => {
-    this.controls.removeEventListener("change", callback);
+    this.controls.removeEventListener('change', callback);
   };
 
   update(width: number, height: number) {

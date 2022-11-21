@@ -1,6 +1,6 @@
-import * as THREE from "three";
-import { ThreeCamera } from "./Camera";
-import { getGeomType, GeomType, ThreeScene } from "./Scene";
+import * as THREE from 'three';
+import { ThreeCamera } from './Camera';
+import { getGeomType, GeomType, ThreeScene } from './Scene';
 import { Vector3 } from 'three';
 
 export interface RaycasterContext {
@@ -39,8 +39,7 @@ export class ThreeRaycaster {
     // Probably makes sense to use some BVH like octrees or scene graphs to optimize this
     const intersections = this.raycaster.intersectObjects(this.context.scene.getAllMeshes());
 
-    const filteredIntersections = intersections
-      .filter((intersection) => filterFn(getGeomType(intersection.object)));
+    const filteredIntersections = intersections.filter((intersection) => filterFn(getGeomType(intersection.object)));
 
     if (filteredIntersections.length > 0) {
       const first = filteredIntersections[0];

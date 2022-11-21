@@ -1,73 +1,63 @@
-import React, { useEffect, useRef, useState } from "react";
-import Editor from "./Editor";
-import Toolbar from "./Toolbar";
-import "./App.css";
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import Editor from './Editor';
+import Toolbar from './Toolbar';
+import './App.css';
+import { ToolMode } from './tools/types';
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const rectRef = useRef<DOMRect | null>(null);
 
   const [editor, setEditor] = useState<Editor | null>(null);
 
-  // Initialize the Editor on mount
+  // Initialize the Editor on mount (editor doesn't change once set)
   useEffect(() => {
     const canvas = canvasRef.current;
-    //  Make sure we don't chnmge stage after the editor is set
-    if (canvas && !editor) {
-      setEditor( new Editor({
-        canvas: canvas,
-        width: canvas.clientWidth,
-        height: canvas.clientHeight,
-      }));
-    }
-  }, [editor]);
+    if (!canvas) return;
 
-  // Start listening to windows resize event on mount,
-  // and stop listening to it on unmount
-  useEffect(() => {
-    const canvas = canvasRef.current;
+    const newEditor = new Editor({
+      canvas: canvas,
+    });
+    setEditor(newEditor);
 
-    function handleResize() {
-      if (canvas && editor) {
-        editor.handleResize(canvas.clientWidth, canvas.clientHeight);
-      }
-    }
+    // Select tool is activated by default
+    newEditor.activateTool('select');
 
-    window.addEventListener("resize", handleResize);
+    const handleResize = () => {
+      newEditor.handleResize(canvas.clientWidth, canvas.clientHeight);
+      rectRef.current = canvas.getBoundingClientRect();
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
-  });
+  }, []);
 
-  // Start listening to mouse down/up events on mount,
-  // and stop listening to them on unmount
-  useEffect(() => {
-    const canvas = canvasRef.current;
+  const handleButton = useCallback(
+    (tool: ToolMode) => {
+      editor?.activateTool(tool);
+    },
+    [editor],
+  );
 
-    function handleMouseUp(event: MouseEvent) {
-      if (canvas && editor) {
-        editor.handleMouseUp(event.offsetX, event.offsetY, event.shiftKey);
-      }
-    }
-
-    if (canvas) {
-      canvas.addEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      if (canvas) {
-        canvas.removeEventListener("mouseup", handleMouseUp);
-      }
-    };
-  });
+  const handleMouseUp = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!rectRef.current) return;
+      const { x, y } = rectRef.current;
+      editor?.handleMouseUp(event.clientX - x, event.clientY - y, event.shiftKey);
+    },
+    [editor],
+  );
 
   return (
     <div className="App">
       <header className="App-header unselectable">Simple 3D Editor</header>
       <div className="flex-container">
-        {editor && <Toolbar editor={editor} />}
+        <Toolbar handleButton={handleButton} />
         <div className="Canvas-container">
-          <canvas id="editorCanvas" className="Canvas" ref={canvasRef} />
+          <canvas id="editorCanvas" className="Canvas" ref={canvasRef} onMouseUp={handleMouseUp} />
         </div>
       </div>
     </div>

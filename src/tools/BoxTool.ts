@@ -3,8 +3,8 @@ import { ThreeScene } from '../three/Scene';
 import { Creation } from '../Creation';
 
 export interface CreateToolContext {
-  creation: Creation
-  scene: ThreeScene
+  creation: Creation;
+  scene: ThreeScene;
 }
 
 export class BoxTool implements Tool {
@@ -17,5 +17,4 @@ export class BoxTool implements Tool {
   performAction = (x: number, y: number, _: boolean): void => {
     this.context.creation.createBoxAt(x, y);
   };
-
 }

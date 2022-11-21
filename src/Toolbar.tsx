@@ -1,51 +1,45 @@
-import React, { useEffect, useRef } from "react";
-import Editor from "./Editor";
-import "./Toolbar.css";
-import { ToolMode } from "./tools/types";
+import React, { useRef } from 'react';
+import './Toolbar.css';
+import { ToolMode } from './tools/types';
 
 export interface ToolbarProps {
-  editor: Editor;
+  handleButton: (tool: ToolMode) => void;
 }
 
-function Toolbar({ editor }: ToolbarProps) {
+function Toolbar({ handleButton }: ToolbarProps) {
   const selectButtonRef = useRef<HTMLButtonElement | null>(null);
   const boxButtonRef = useRef<HTMLButtonElement | null>(null);
   const sphereButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const buttonRefs = useRef([selectButtonRef, boxButtonRef, sphereButtonRef]);
 
-  // Activate Select Tool on mount
-  useEffect(() => {
-    handleSelectButton();
-  });
-
   const changeButtonStyles = (tool: ToolMode) => {
     for (let ref of buttonRefs.current) {
       if (ref.current) {
         if (ref.current.id === tool) {
-          ref.current?.classList.add("ToolButton-active");
-          ref.current?.classList.remove("ToolButton-passive");
+          ref.current?.classList.add('ToolButton-active');
+          ref.current?.classList.remove('ToolButton-passive');
         } else {
-          ref.current?.classList.add("ToolButton-passive");
-          ref.current?.classList.remove("ToolButton-active");
+          ref.current?.classList.add('ToolButton-passive');
+          ref.current?.classList.remove('ToolButton-active');
         }
       }
     }
   };
 
   const handleSelectButton = () => {
-    editor.activateTool("select");
-    changeButtonStyles("select");
+    handleButton('select');
+    changeButtonStyles('select');
   };
 
   const handleBoxButton = () => {
-    editor.activateTool("box");
-    changeButtonStyles("box");
+    handleButton('box');
+    changeButtonStyles('box');
   };
 
   const handleSphereButton = () => {
-    editor.activateTool("sphere");
-    changeButtonStyles("sphere");
+    handleButton('sphere');
+    changeButtonStyles('sphere');
   };
 
   return (

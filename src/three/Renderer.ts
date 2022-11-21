@@ -1,6 +1,6 @@
-import * as THREE from "three";
-import { ThreeCamera } from "./Camera";
-import { ThreeScene } from "./Scene";
+import * as THREE from 'three';
+import { ThreeCamera } from './Camera';
+import { ThreeScene } from './Scene';
 
 export interface RendererContext {
   camera: ThreeCamera;
