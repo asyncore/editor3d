@@ -37,25 +37,25 @@ function App() {
     }
   })
 
-  // Start listening to mouse click events on mount,
-  // and stop listening to it on unmount
+  // Start listening to mouse down/up events on mount,
+  // and stop listening to them on unmount
   useEffect(() => {
     const canvas = canvasRef.current;
     const editor = editorRef.current;
 
-    function handleMouseClick(event: MouseEvent) {
+    function handleMouseUp(event: MouseEvent) {
       if (canvas && editor) {
-        editor.handleClick(event.offsetX, event.offsetY, event.shiftKey);
+        editor.handleMouseUp(event.offsetX, event.offsetY, event.shiftKey);
       }
     }
 
     if (canvas) {
-      canvas.addEventListener('click', handleMouseClick)
+      canvas.addEventListener('mouseup', handleMouseUp)
     }
 
     return () => {
       if (canvas) {
-        canvas.removeEventListener('click', handleMouseClick)
+        canvas.removeEventListener('mouseup', handleMouseUp)
       }
     }
   })

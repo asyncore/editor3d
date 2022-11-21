@@ -1,25 +1,15 @@
 import * as THREE from 'three';
 import { ThreeCamera } from './Camera';
-import { ThreeScene } from './Scene';
+import { getGeomType, GeomType, ThreeScene } from './Scene';
 
 export interface RaycasterConfig {
   camera: ThreeCamera,
   scene: ThreeScene,
 }
 
-export type HitType = 'ground' | 'box' | 'sphere' | 'selection';
-
-export function setHitType(object: THREE.Object3D, hit: HitType): void {
-  object.userData['HitType'] = hit;
-}
-
-export function getHitType(object: THREE.Object3D): HitType | undefined {
-  return object.userData['HitType'];
-}
-
 export interface RaycastHit {
-  type: HitType | undefined;
-  id: string;
+  type: GeomType | undefined;
+  id: number;
 }
 
 export class ThreeRaycaster {
@@ -34,7 +24,7 @@ export class ThreeRaycaster {
   cast = (
     x: number,
     y: number,
-    filterFn: (hitType: HitType | undefined) => boolean,
+    filterFn: (type: GeomType | undefined) => boolean,
   ): RaycastHit | null => {
     // Calculate the mouse position in normalized coordinates
     const cameraConfig = this.config.camera.config;
@@ -51,10 +41,10 @@ export class ThreeRaycaster {
 
     const filteredObjects = intersections
       .map(intersection => intersection.object)
-      .filter(object => filterFn(getHitType(object)));
+      .filter(object => filterFn(getGeomType(object)));
 
     if (filteredObjects.length > 0) {
-      return {id: filteredObjects[0].uuid, type: getHitType(filteredObjects[0])};
+      return {id: filteredObjects[0].id, type: getGeomType(filteredObjects[0])};
     }
 
     return null;

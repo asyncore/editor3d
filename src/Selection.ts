@@ -1,63 +1,47 @@
-import { HitType, ThreeRaycaster } from './three/Raycaster';
+import { ThreeRaycaster } from './three/Raycaster';
+import { GeomType } from './three/Scene';
 
 interface SelectionConfig {
   raycaster: ThreeRaycaster
 }
 
 export class Selection {
-  private readonly selectionSet: Set<string>;
+  private readonly selectionSet: Set<number>;
   private readonly config: SelectionConfig;
 
   constructor(config: SelectionConfig) {
     this.config = config;
-    this.selectionSet = new Set<string>();
+    this.selectionSet = new Set<number>();
   }
 
-  isSelectable = (type: HitType | undefined): boolean => {
+  isSelectable = (type: GeomType | undefined): boolean => {
     return type === 'box' || type === 'sphere';
   }
 
-  isPickable = (type: HitType | undefined): boolean => {
+  isPickable = (type: GeomType | undefined): boolean => {
     return type === 'box' || type === 'sphere' || type === 'ground';
   }
 
-  pick = (x: number, y: number, additive: boolean) => {
-    const hit = this.config.raycaster.cast(x, y, this.isPickable);
-    if (hit) {
-      if (this.isSelectable(hit.type)) {
-        // If the user is holding down shift, perform additive selection
-        if (this.isSelected(hit.id) && additive) {
-          this.remove(hit.id);
-        } else if (!this.isSelected(hit.id)) {
-          // If the selection is additive, only the picked object will be selected
-          // Otherwise it will be added to the selection
-          if (!additive) {
-            this.clear();
-          }
-          this.add(hit.id);
-        }
-      } else {
-        // If the pick hit an unselectable object, clear the selection
-        this.clear();
-      }
-    } else {
-      // If the pick didn't hit any object, clear the selection
-      this.clear();
-    }
-  }
+  count = (): number => this.selectionSet.size;
 
-  isSelected = (objectId: string): boolean => {
+  has = (objectId: number): boolean => {
     return this.selectionSet.has(objectId);
   }
 
-  add = (...objectIds: string[]): void => {
-    objectIds.forEach((id) => {
+  isSelected = (objectId: number) => this.has(objectId);
+
+  forEach = (callback: (objectId: number) => void): void => {
+    this.selectionSet.forEach(callback);
+  }
+
+  add = (...objectIds: number[]): void => {
+    objectIds.forEach(id => {
       this.selectionSet.add(id);
     });
   };
 
-  remove = (...objectIds: string[]): void => {
-    objectIds.forEach((id) => {
+  remove = (...objectIds: number[]): void => {
+    objectIds.forEach(id => {
       if (this.selectionSet.has(id)) {
         this.selectionSet.delete(id);
       }
@@ -71,5 +55,41 @@ export class Selection {
   list = () => {
     return Array.from(this.selectionSet.values());
   }
-}
 
+  pick = (x: number, y: number, additive: boolean) => {
+    const hit = this.config.raycaster.cast(x, y, this.isPickable);
+    if (hit) {
+      if (this.isSelectable(hit.type)) {
+        if (this.isSelected(hit.id)) {
+          // if the selection is additive, the picked object will be unselected
+          // Otherwise, only the picked object will be selected
+          if (additive) {
+            this.remove(hit.id);
+          } else {
+            this.clear();
+            this.add(hit.id);
+          }
+        } else {
+          // If the selection is additive, the picked object will be added
+          // to the selection. Otherwise, only the picked object will be selected
+          if (!additive) {
+            this.clear();
+          }
+          this.add(hit.id);
+        }
+      } else {
+        // If the pick hit an unselectable object, clear the selection
+        // Unless the selection is additive
+        if (!additive) {
+          this.clear();
+        }
+      }
+    } else {
+      // If the pick didn't hit any object, clear the selection
+      // Unless the selection is additive
+      if (!additive) {
+        this.clear();
+      }
+    }
+  }
+}

@@ -17,6 +17,7 @@ class Editor {
   private readonly renderer: ThreeRenderer;
 
   private readonly selection: Selection;
+  private cameraChanged: boolean;
 
   constructor(config: EditorConfig) {
     this.config = config;
@@ -33,17 +34,30 @@ class Editor {
     this.scene.addBox(5, 2, 5);
     this.scene.addSphere(-5, 3, -5);
 
+    // Handle camera events to detect clicks correctly
+    this.cameraChanged = false;
+    this.camera.addChangeListener(() => {
+      this.cameraChanged = true;
+    });
+
     requestAnimationFrame(this.render);
   }
-
 
   handleResize = (width: number, height: number): void => {
     this.renderer.resize(width, height);
   }
 
-  handleClick = (x: number, y: number, shiftKey: boolean): void => {
-    this.selection.pick(x, y, shiftKey);
-    console.log("Selected object ids:", this.selection.list());
+  handleMouseUp = (x: number, y: number, shiftKey: boolean): void => {
+    // Only perform picking if the camera is not changing (dragging)
+    if (!this.cameraChanged) {
+      // If the user is holding down shift,
+      // perform additive selection (third arg)
+      this.selection.pick(x, y, shiftKey);
+      // If nothing is selected, nothing will be highlighted
+      this.scene.highlightMeshes(this.selection);
+    }
+    // Clear the flag regardless
+    this.cameraChanged = false;
   }
 
   render = (): void => {
