@@ -3,9 +3,6 @@ import { ThreeCamera } from './Camera';
 import { ThreeScene } from './Scene';
 
 export interface RendererConfig {
-  canvas: HTMLCanvasElement,
-  width: number;
-  height: number;
   camera: ThreeCamera,
   scene: ThreeScene,
 }
@@ -18,11 +15,12 @@ export class ThreeRenderer {
   constructor(config: RendererConfig) {
     this.scene = config.scene;
     this.camera = config.camera;
+    const cameraConfig = config.camera.getConfig();
     this.renderer = new THREE.WebGLRenderer({
-      canvas: config.canvas,
+      canvas: cameraConfig.canvas,
       antialias: true,
     });
-    this.renderer.setSize(config.width, config.height, false);
+    this.renderer.setSize(cameraConfig.width, cameraConfig.height, false);
   }
   
   resize = (width: number, height: number) => {
@@ -30,7 +28,7 @@ export class ThreeRenderer {
     this.camera.update(width, height);
   }
   
-  render = () => {
+  render = (): void => {
     this.renderer.render(
       this.scene.getThreeObject(),
       this.camera.getThreeObject(),

@@ -17,10 +17,7 @@ class Editor {
     
     this.scene = new ThreeScene({backgroundColor: 'skyblue'});
     
-    this.camera = new ThreeCamera({
-      width: config.width,
-      height: config.height
-    });
+    this.camera = new ThreeCamera(config);
     
     this.renderer = new ThreeRenderer({
       ...config,
