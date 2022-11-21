@@ -1,0 +1,19 @@
+.Toolbar {
+  background-color: #282c34;
+  width: 4rem;
+}
+
+.ToolButton {
+  width: 3.6rem;
+  margin-left: 0.1rem;
+}
+
+.ToolButton-passive {
+  font-weight: normal;
+  color: black;
+}
+
+.ToolButton-active {
+  font-weight: bold;
+  color: limegreen;
+}

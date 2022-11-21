@@ -1,10 +1,10 @@
-import * as THREE from 'three';
-import { ThreeCamera } from './Camera';
-import { ThreeScene } from './Scene';
+import * as THREE from "three";
+import { ThreeCamera } from "./Camera";
+import { ThreeScene } from "./Scene";
 
-export interface RendererConfig {
-  camera: ThreeCamera,
-  scene: ThreeScene,
+export interface RendererContext {
+  camera: ThreeCamera;
+  scene: ThreeScene;
 }
 
 export class ThreeRenderer {
@@ -12,27 +12,24 @@ export class ThreeRenderer {
   private readonly camera: ThreeCamera;
   private readonly renderer: THREE.WebGLRenderer;
 
-  constructor(config: RendererConfig) {
-    this.scene = config.scene;
-    this.camera = config.camera;
-    const cameraConfig = config.camera.config;
+  constructor(context: RendererContext) {
+    this.scene = context.scene;
+    this.camera = context.camera;
+    const canvas = context.camera.context.canvas;
     this.renderer = new THREE.WebGLRenderer({
-      canvas: cameraConfig.canvas,
+      canvas: canvas,
       alpha: true,
       antialias: true,
     });
-    this.renderer.setSize(cameraConfig.width, cameraConfig.height, false);
+    this.renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
   }
 
   resize = (width: number, height: number): void => {
     this.renderer.setSize(width, height, false);
     this.camera.update(width, height);
-  }
+  };
 
   render = (): void => {
-    this.renderer.render(
-      this.scene._getThreeObject(),
-      this.camera._getThreeObject(),
-    );
-  }
+    this.renderer.render(this.scene._getThreeObject(), this.camera._getThreeObject());
+  };
 }

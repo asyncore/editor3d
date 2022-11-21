@@ -1,52 +1,52 @@
-import * as THREE from 'three';
-import { ThreeCamera } from './Camera';
-import { getGeomType, GeomType, ThreeScene } from './Scene';
+import * as THREE from "three";
+import { ThreeCamera } from "./Camera";
+import { getGeomType, GeomType, ThreeScene } from "./Scene";
+import { Vector3 } from 'three';
 
-export interface RaycasterConfig {
-  camera: ThreeCamera,
-  scene: ThreeScene,
+export interface RaycasterContext {
+  camera: ThreeCamera;
+  scene: ThreeScene;
 }
 
 export interface RaycastHit {
-  type: GeomType | undefined;
   id: number;
+  point: Vector3;
+  type: GeomType | undefined;
 }
 
 export class ThreeRaycaster {
-  private readonly config: RaycasterConfig;
+  private readonly context: RaycasterContext;
   private readonly raycaster: THREE.Raycaster;
 
-  constructor(config: RaycasterConfig) {
-    this.config = config;
+  constructor(context: RaycasterContext) {
+    this.context = context;
     this.raycaster = new THREE.Raycaster();
   }
 
-  cast = (
-    x: number,
-    y: number,
-    filterFn: (type: GeomType | undefined) => boolean,
-  ): RaycastHit | null => {
+  cast = (x: number, y: number, filterFn: (type: GeomType | undefined) => boolean): RaycastHit | null => {
     // Calculate the mouse position in normalized coordinates
-    const cameraConfig = this.config.camera.config;
-    const xNorm = x / cameraConfig.width * 2 - 1;
-    const yNorm = -y / cameraConfig.height * 2 + 1;
+    const canvas = this.context.camera.context.canvas;
+    const xNorm = (x / canvas.clientWidth) * 2 - 1;
+    const yNorm = (-y / canvas.clientHeight) * 2 + 1;
     const coords = new THREE.Vector2(xNorm, yNorm);
 
+    console.log(`Raycast at (${xNorm},${yNorm})`);
+
     // update the picking ray with the camera and pointer position
-    this.raycaster.setFromCamera(coords, this.config.camera._getThreeObject());
+    this.raycaster.setFromCamera(coords, this.context.camera._getThreeObject());
 
     // NOTE: I don't know how efficient it is to pass all the meshes in the scene to this
     // Probably makes sense to use some BVH like octrees or scene graphs to optimize this
-    const intersections = this.raycaster.intersectObjects(this.config.scene.getAllMeshes());
+    const intersections = this.raycaster.intersectObjects(this.context.scene.getAllMeshes());
 
-    const filteredObjects = intersections
-      .map(intersection => intersection.object)
-      .filter(object => filterFn(getGeomType(object)));
+    const filteredIntersections = intersections
+      .filter((intersection) => filterFn(getGeomType(intersection.object)));
 
-    if (filteredObjects.length > 0) {
-      return {id: filteredObjects[0].id, type: getGeomType(filteredObjects[0])};
+    if (filteredIntersections.length > 0) {
+      const first = filteredIntersections[0];
+      return { id: first.object.id, point: first.point, type: getGeomType(first.object) };
     }
 
     return null;
-  }
+  };
 }

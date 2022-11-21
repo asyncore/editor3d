@@ -1,47 +1,47 @@
-import { ThreeRaycaster } from './three/Raycaster';
-import { GeomType } from './three/Scene';
+import { ThreeRaycaster } from "./three/Raycaster";
+import { GeomType } from "./three/Scene";
 
-interface SelectionConfig {
-  raycaster: ThreeRaycaster
+interface SelectionContext {
+  raycaster: ThreeRaycaster;
 }
 
 export class Selection {
   private readonly selectionSet: Set<number>;
-  private readonly config: SelectionConfig;
+  private readonly context: SelectionContext;
 
-  constructor(config: SelectionConfig) {
-    this.config = config;
+  constructor(context: SelectionContext) {
+    this.context = context;
     this.selectionSet = new Set<number>();
   }
 
   isSelectable = (type: GeomType | undefined): boolean => {
-    return type === 'box' || type === 'sphere';
-  }
+    return type === "box" || type === "sphere";
+  };
 
   isPickable = (type: GeomType | undefined): boolean => {
-    return type === 'box' || type === 'sphere' || type === 'ground';
-  }
+    return type === "box" || type === "sphere" || type === "ground";
+  };
 
   count = (): number => this.selectionSet.size;
 
   has = (objectId: number): boolean => {
     return this.selectionSet.has(objectId);
-  }
+  };
 
   isSelected = (objectId: number) => this.has(objectId);
 
   forEach = (callback: (objectId: number) => void): void => {
     this.selectionSet.forEach(callback);
-  }
+  };
 
   add = (...objectIds: number[]): void => {
-    objectIds.forEach(id => {
+    objectIds.forEach((id) => {
       this.selectionSet.add(id);
     });
   };
 
   remove = (...objectIds: number[]): void => {
-    objectIds.forEach(id => {
+    objectIds.forEach((id) => {
       if (this.selectionSet.has(id)) {
         this.selectionSet.delete(id);
       }
@@ -50,14 +50,14 @@ export class Selection {
 
   clear = (): void => {
     this.selectionSet.clear();
-  }
+  };
 
   list = () => {
     return Array.from(this.selectionSet.values());
-  }
+  };
 
   pick = (x: number, y: number, additive: boolean) => {
-    const hit = this.config.raycaster.cast(x, y, this.isPickable);
+    const hit = this.context.raycaster.cast(x, y, this.isPickable);
     if (hit) {
       if (this.isSelectable(hit.type)) {
         if (this.isSelected(hit.id)) {
@@ -91,5 +91,5 @@ export class Selection {
         this.clear();
       }
     }
-  }
+  };
 }

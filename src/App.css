@@ -14,6 +14,19 @@
   color: white;
 }
 
+.flex-container {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -moz-flex;
+  display: -webkit-flex;
+  display: flex;
+}
+
 .Canvas-container {
   display: block;
   width: 100vw;

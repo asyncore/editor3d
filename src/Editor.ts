@@ -1,38 +1,42 @@
-import { ThreeCamera } from './three/Camera';
-import { ThreeScene } from './three/Scene';
-import { ThreeRenderer } from './three/Renderer';
-import { ThreeRaycaster } from './three/Raycaster';
-import { Selection } from './Selection';
+import { ThreeCamera } from "./three/Camera";
+import { ThreeScene } from "./three/Scene";
+import { ThreeRenderer } from "./three/Renderer";
+import { ThreeRaycaster } from "./three/Raycaster";
+import { Selection } from "./Selection";
+import { createTool, Tool, ToolMode } from "./tools/types";
+import { Creation } from './Creation';
 
-interface EditorConfig {
+interface EditorContext {
   canvas: HTMLCanvasElement;
   width: number;
   height: number;
 }
 
 class Editor {
-  private readonly config: EditorConfig;
+  private readonly context: EditorContext;
   private readonly scene: ThreeScene;
   private readonly camera: ThreeCamera;
   private readonly renderer: ThreeRenderer;
 
   private readonly selection: Selection;
+  private readonly creation: Creation;
+
   private cameraChanged: boolean;
 
-  constructor(config: EditorConfig) {
-    this.config = config;
+  private tool: Tool;
 
-    // Initialize three.js services
-    this.scene = new ThreeScene({backgroundColor: 'skyblue'});
-    this.camera = new ThreeCamera(config);
-    this.renderer = new ThreeRenderer({...config, scene: this.scene, camera: this.camera});
-    const raycaster = new ThreeRaycaster({scene: this.scene, camera: this.camera})
+  constructor(context: EditorContext) {
+    this.context = context;
 
-    // Initialize the selection service
-    this.selection = new Selection({raycaster});
+    // Initialize Three.js wrappers
+    this.scene = new ThreeScene({ backgroundColor: "skyblue" });
+    this.camera = new ThreeCamera(context);
+    this.renderer = new ThreeRenderer({ ...context, scene: this.scene, camera: this.camera });
+    const raycaster = new ThreeRaycaster({ scene: this.scene, camera: this.camera });
 
-    this.scene.addBox(5, 2, 5);
-    this.scene.addSphere(-5, 3, -5);
+    // Initialize the selection and creation objects
+    this.selection = new Selection({ raycaster });
+    this.creation = new Creation({ raycaster, scene: this.scene});
 
     // Handle camera events to detect clicks correctly
     this.cameraChanged = false;
@@ -40,30 +44,32 @@ class Editor {
       this.cameraChanged = true;
     });
 
+    this.tool = createTool("select", { selection: this.selection, creation: this.creation, scene: this.scene });
+
     requestAnimationFrame(this.render);
   }
 
   handleResize = (width: number, height: number): void => {
     this.renderer.resize(width, height);
-  }
+  };
 
   handleMouseUp = (x: number, y: number, shiftKey: boolean): void => {
-    // Only perform picking if the camera is not changing (dragging)
+    // Only perform action if the camera is not changing (dragging)
     if (!this.cameraChanged) {
-      // If the user is holding down shift,
-      // perform additive selection (third arg)
-      this.selection.pick(x, y, shiftKey);
-      // If nothing is selected, nothing will be highlighted
-      this.scene.highlightMeshes(this.selection);
+      this.tool.performAction(x, y, shiftKey);
     }
     // Clear the flag regardless
     this.cameraChanged = false;
-  }
+  };
+
+  activateTool = (tool: ToolMode) => {
+    this.tool = createTool(tool, { selection: this.selection, creation: this.creation, scene: this.scene });
+  };
 
   render = (): void => {
     this.renderer.render();
     requestAnimationFrame(this.render);
-  }
+  };
 }
 
 export default Editor;
