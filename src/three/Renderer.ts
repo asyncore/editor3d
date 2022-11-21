@@ -11,30 +11,28 @@ export class ThreeRenderer {
   private readonly scene: ThreeScene;
   private readonly camera: ThreeCamera;
   private readonly renderer: THREE.WebGLRenderer;
-  
+
   constructor(config: RendererConfig) {
     this.scene = config.scene;
     this.camera = config.camera;
-    const cameraConfig = config.camera.getConfig();
+    const cameraConfig = config.camera.config;
     this.renderer = new THREE.WebGLRenderer({
       canvas: cameraConfig.canvas,
+      alpha: true,
       antialias: true,
     });
     this.renderer.setSize(cameraConfig.width, cameraConfig.height, false);
   }
-  
-  resize = (width: number, height: number) => {
+
+  resize = (width: number, height: number): void => {
     this.renderer.setSize(width, height, false);
     this.camera.update(width, height);
   }
-  
+
   render = (): void => {
     this.renderer.render(
-      this.scene.getThreeObject(),
-      this.camera.getThreeObject(),
+      this.scene._getThreeObject(),
+      this.camera._getThreeObject(),
     );
   }
-  
-  /** @internal */
-  getThreeObject = () => this.renderer;
 }

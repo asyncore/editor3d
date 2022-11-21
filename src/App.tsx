@@ -5,7 +5,7 @@ import './App.css';
 function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
-  
+
   // Initialize the Editor on mount
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -17,28 +17,52 @@ function App() {
       })
     }
   })
-  
+
   // Start listening to windows resize event on mount,
   // and stop listening to it on unmount
   useEffect(() => {
+    const canvas = canvasRef.current;
+    const editor = editorRef.current;
+
     function handleResize() {
-      const canvas = canvasRef.current;
-      const editor = editorRef.current;
       if (canvas && editor) {
-        editor.resize(canvas.clientWidth, canvas.clientHeight);
+        editor.handleResize(canvas.clientWidth, canvas.clientHeight);
       }
     }
-    
+
     window.addEventListener('resize', handleResize)
-    
+
     return () => {
       window.removeEventListener('resize', handleResize)
     }
   })
-  
+
+  // Start listening to mouse click events on mount,
+  // and stop listening to it on unmount
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const editor = editorRef.current;
+
+    function handleMouseClick(event: MouseEvent) {
+      if (canvas && editor) {
+        editor.handleClick(event.offsetX, event.offsetY, event.shiftKey);
+      }
+    }
+
+    if (canvas) {
+      canvas.addEventListener('click', handleMouseClick)
+    }
+
+    return () => {
+      if (canvas) {
+        canvas.removeEventListener('click', handleMouseClick)
+      }
+    }
+  })
+
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="App-header unselectable">
         Simple 3D Editor
       </header>
       <div className="Canvas-container">
