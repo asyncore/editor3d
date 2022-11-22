@@ -1,6 +1,6 @@
-import { ThreeRaycaster } from './three/Raycaster';
-import { GeomType, getRadius, getSize, ThreeScene } from './three/Scene';
-import { calculateTangentSpherePosition } from './three/util';
+import { ThreeRaycaster } from '../ThreeWrappers/Raycaster';
+import { GeomType, getRadius, getSize, ThreeScene } from '../ThreeWrappers/Scene';
+import { calculateTangentSpherePosition } from '../ThreeWrappers/util';
 
 export interface CreationContext {
   raycaster: ThreeRaycaster;

@@ -1,12 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import './Toolbar.css';
-import { ToolMode } from './tools/types';
+import { ToolMode } from '../Tools/types';
 
 export interface ToolbarProps {
   handleButton: (tool: ToolMode) => void;
+  toolMode: ToolMode;
 }
 
-function Toolbar({ handleButton }: ToolbarProps) {
+function Toolbar({ handleButton, toolMode }: ToolbarProps) {
   const selectButtonRef = useRef<HTMLButtonElement | null>(null);
   const boxButtonRef = useRef<HTMLButtonElement | null>(null);
   const sphereButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -27,20 +28,25 @@ function Toolbar({ handleButton }: ToolbarProps) {
     }
   };
 
-  const handleSelectButton = () => {
+  // Update the button sate, if tool mode changes outside the toolbar
+  useEffect(() => {
+    changeButtonStyles(toolMode);
+  }, [toolMode]);
+
+  const handleSelectButton = useCallback(() => {
     handleButton('select');
     changeButtonStyles('select');
-  };
+  }, [handleButton]);
 
-  const handleBoxButton = () => {
+  const handleBoxButton = useCallback(() => {
     handleButton('box');
     changeButtonStyles('box');
-  };
+  }, [handleButton]);
 
-  const handleSphereButton = () => {
+  const handleSphereButton = useCallback(() => {
     handleButton('sphere');
     changeButtonStyles('sphere');
-  };
+  }, [handleButton]);
 
   return (
     <div className="Toolbar">

@@ -30,8 +30,6 @@ export class ThreeRaycaster {
     const yNorm = (-y / canvas.clientHeight) * 2 + 1;
     const coords = new THREE.Vector2(xNorm, yNorm);
 
-    console.log(`Raycast at (${xNorm},${yNorm})`);
-
     // update the picking ray with the camera and pointer position
     this.raycaster.setFromCamera(coords, this.context.camera._getThreeObject());
 

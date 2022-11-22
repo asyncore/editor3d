@@ -1,6 +1,6 @@
 import { Tool } from './types';
-import { ThreeScene } from '../three/Scene';
-import { Creation } from '../Creation';
+import { ThreeScene } from '../ThreeWrappers/Scene';
+import { Creation } from '../Controllers/Creation';
 
 export interface CreateToolContext {
   creation: Creation;

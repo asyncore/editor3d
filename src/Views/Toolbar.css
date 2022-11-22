@@ -1,11 +1,11 @@
 .Toolbar {
   background-color: #282c34;
-  width: 4rem;
+  width: 5.5rem;
 }
 
 .ToolButton {
-  width: 3.6rem;
-  margin-left: 0.1rem;
+  min-width: 4rem;
+  margin-left: 0.05rem;
 }
 
 .ToolButton-passive {

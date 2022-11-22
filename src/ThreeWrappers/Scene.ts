@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Object3D } from 'three';
-import { Selection } from '../Selection';
+import { Selection } from '../Controllers/Selection';
+import { number3 } from '../Controllers/Inspection';
 
 export interface SceneContext {
   backgroundColor?: string;
@@ -202,6 +203,40 @@ export class ThreeScene {
       // then clear the map because no transient mesh remains
       this.transientIdMap.clear();
     }
+  };
+
+  getTransientId = (objectId: number): number | undefined => {
+    if (this.transientIdMap.has(objectId)) {
+      return this.transientIdMap.get(objectId);
+    }
+    return undefined;
+  };
+
+  getPositionById = (objectId: number): number3 | null => {
+    const object = this.scene.getObjectById(objectId);
+    if (object) {
+      const p = object.position;
+      return [p.x, p.y, p.z];
+    }
+    return null;
+  };
+
+  getScalingById = (objectId: number): number3 | null => {
+    const object = this.scene.getObjectById(objectId);
+    if (object) {
+      const s = object.scale;
+      return [s.x, s.y, s.z];
+    }
+    return null;
+  };
+
+  getRotationById = (objectId: number): number3 | null => {
+    const object = this.scene.getObjectById(objectId);
+    if (object) {
+      const r = object.rotation;
+      return [r.x, r.y, r.z];
+    }
+    return null;
   };
 
   /** @internal */

@@ -1,6 +1,6 @@
 import { Tool } from './types';
-import { Selection } from '../Selection';
-import { ThreeScene } from '../three/Scene';
+import { Selection } from '../Controllers/Selection';
+import { ThreeScene } from '../ThreeWrappers/Scene';
 
 export interface SelectToolContext {
   selection: Selection;

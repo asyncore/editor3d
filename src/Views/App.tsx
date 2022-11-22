@@ -1,30 +1,35 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import Editor from './Editor';
+import Editor from '../Controllers/Editor';
 import Toolbar from './Toolbar';
+import InspectorPanel from './InspectorPanel';
 import './App.css';
-import { ToolMode } from './tools/types';
+import { ToolMode } from '../Tools/types';
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rectRef = useRef<DOMRect | null>(null);
 
   const [editor, setEditor] = useState<Editor | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   // Initialize the Editor on mount (editor doesn't change once set)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const newEditor = new Editor({
+    const thisEditor = new Editor({
       canvas: canvas,
     });
-    setEditor(newEditor);
+    setEditor(thisEditor);
+    thisEditor.getSelection().setSelectionChanged((selectedIds) => {
+      setSelectedIds(selectedIds);
+    });
 
     // Select tool is activated by default
-    newEditor.activateTool('select');
+    thisEditor.activateTool('select');
 
     const handleResize = () => {
-      newEditor.handleResize(canvas.clientWidth, canvas.clientHeight);
+      thisEditor.handleResize(canvas.clientWidth, canvas.clientHeight);
       rectRef.current = canvas.getBoundingClientRect();
     };
     handleResize();
@@ -55,10 +60,11 @@ function App() {
     <div className="App">
       <header className="App-header unselectable">Simple 3D Editor</header>
       <div className="flex-container">
-        <Toolbar handleButton={handleButton} />
+        <Toolbar handleButton={handleButton} toolMode="select" />
         <div className="Canvas-container">
           <canvas id="editorCanvas" className="Canvas" ref={canvasRef} onMouseUp={handleMouseUp} />
         </div>
+        <InspectorPanel selectedIds={selectedIds} editor={editor} />
       </div>
     </div>
   );

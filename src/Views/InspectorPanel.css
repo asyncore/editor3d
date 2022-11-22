@@ -1,0 +1,15 @@
+.InspectorPanel {
+  background-color: #282c34;
+  width: 16.5rem;
+}
+
+.IdLabel {
+  background: beige;
+  width: 12.5rem;
+}
+
+.IdWidget {
+  font-family: "Consolas", serif;
+  background: sandybrown;
+  width: 12.5rem
+}
